@@ -56,12 +56,24 @@ function global:Save-MacrosToDisk {
 1..9 | ForEach-Object {
     $n = "$_"
     Set-Item -Path "function:global:sm$n" -Value {
-        $last = Get-History -Count 1
-        if (-not $last) {
-            Write-Warning "No history to save into macro $n."
-            return
+        param(
+            [string] $Cmd
+        )
+        if ($PSBoundParameters.ContainsKey('Cmd')) {
+            if ([string]::IsNullOrWhiteSpace($Cmd)) {
+                Write-Warning "-Cmd must not be empty."
+                return
+            }
+            $global:PersistentMacros[$n] = $Cmd
         }
-        $global:PersistentMacros[$n] = $last.CommandLine
+        else {
+            $last = Get-History -Count 1
+            if (-not $last) {
+                Write-Warning "No history to save into macro $n."
+                return
+            }
+            $global:PersistentMacros[$n] = $last.CommandLine
+        }
         Save-MacrosToDisk
     }.GetNewClosure()
 
