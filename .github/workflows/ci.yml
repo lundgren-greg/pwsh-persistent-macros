@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  repo-kit:
+    name: Repo kit
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Required files exist
+        shell: pwsh
+        run: |
+          $required = @(
+            "README.md",
+            "LICENSE",
+            "SECURITY.md",
+            "CODEOWNERS",
+            "PROJECT.md",
+            "AGENTS.md",
+            ".editorconfig",
+            ".gitignore",
+            ".github/workflows/ci.yml",
+            ".github/copilot-instructions.md"
+          )
+          $missing = $required | Where-Object { -not (Test-Path $_) }
+          if ($missing) {
+            Write-Error "Missing required repo-kit files:`n$($missing -join "`n")"
+            exit 1
+          }
+          Write-Host "Repo kit files present."
+
+      - name: Parse PowerShell scripts
+        shell: pwsh
+        run: |
+          $files = Get-ChildItem -Path scripts, .github -Recurse -Filter *.ps1 -ErrorAction SilentlyContinue
+          if (-not $files) {
+            Write-Host "No PowerShell scripts to parse."
+            exit 0
+          }
+          $errors = @()
+          foreach ($file in $files) {
+            $tokens = $null
+            $parseErrors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile(
+              $file.FullName,
+              [ref]$tokens,
+              [ref]$parseErrors
+            ) | Out-Null
+            if ($parseErrors.Count -gt 0) {
+              $errors += "$($file.FullName): $($parseErrors.Count) parse error(s)"
+              $parseErrors | ForEach-Object { Write-Host "  $_" }
+            } else {
+              Write-Host "OK: $($file.FullName)"
+            }
+          }
+          if ($errors.Count -gt 0) {
+            Write-Error "PowerShell parse errors:`n$($errors -join "`n")"
+            exit 1
+          }
+
+      - name: PSScriptAnalyzer (Error severity)
+        shell: pwsh
+        run: |
+          $files = Get-ChildItem -Path scripts -Filter *.ps1 -ErrorAction SilentlyContinue
+          if (-not $files) {
+            Write-Host "No scripts/ files to analyze."
+            exit 0
+          }
+          Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+          $results = $files | ForEach-Object {
+            Invoke-ScriptAnalyzer -Path $_.FullName -Severity Error
+          }
+          if ($results) {
+            $results | Format-Table -AutoSize
+            Write-Error "$($results.Count) PSScriptAnalyzer error(s)"
+            exit 1
+          }
+          Write-Host "PSScriptAnalyzer: no errors."

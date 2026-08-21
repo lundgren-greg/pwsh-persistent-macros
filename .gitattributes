@@ -1,0 +1,23 @@
+# Default to Windows line endings (matches .editorconfig).
+* text=auto eol=crlf
+
+# Shell scripts used on *nix keep LF.
+*.sh text eol=lf
+
+# Binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.exe binary
+*.dll binary
+*.pdb binary
+*.zip binary
+*.7z binary
+*.pdf binary
+*.xlsx binary
+*.xlsm binary
+*.docx binary

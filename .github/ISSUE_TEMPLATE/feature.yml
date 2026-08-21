@@ -1,0 +1,25 @@
+name: Feature
+description: A new capability or change in behavior
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is painful or missing today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: What should exist instead? Keep it local-first unless there is a strong reason not to.
+    validations:
+      required: true
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of scope
+      description: What this should not do.
+    validations:
+      required: false

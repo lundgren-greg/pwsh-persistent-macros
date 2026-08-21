@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security report
+    url: https://github.com/__GITHUB_OWNER__/__PROJECT_NAME__/security/advisories/new
+    about: Do not open a public issue for vulnerabilities. Use private reporting.

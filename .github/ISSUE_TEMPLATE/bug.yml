@@ -1,0 +1,30 @@
+name: Bug
+description: Something is broken
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did you expect, and what actually happened?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Repro steps
+      description: Exact commands or clicks.
+      render: powershell
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: OS, PowerShell version, stack toolchain versions.
+      value: |
+        - OS:
+        - pwsh:
+        - Toolchain:
+    validations:
+      required: false

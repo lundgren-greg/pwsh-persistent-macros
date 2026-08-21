@@ -1,0 +1,18 @@
+{
+  "files.eol": "\r\n",
+  "editor.insertSpaces": true,
+  "editor.tabSize": 4,
+  "[json]": {
+    "editor.tabSize": 2
+  },
+  "[yaml]": {
+    "editor.tabSize": 2
+  },
+  "[github-actions-workflow]": {
+    "editor.tabSize": 2
+  },
+  "files.trimTrailingWhitespace": true,
+  "[markdown]": {
+    "files.trimTrailingWhitespace": false
+  }
+}

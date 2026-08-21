@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-validate:
+    name: Lint & Validate
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate package.json
+        shell: pwsh
+        run: |
+          if (-not (Test-Path package.json)) {
+            Write-Error "package.json is missing."
+            exit 1
+          }
+          node -e "JSON.parse(require('fs').readFileSync('package.json','utf8')); console.log('package.json is valid')"
+
+      - name: Install
+        shell: pwsh
+        run: |
+          if (Test-Path package-lock.json) { npm ci } else { npm install }
+
+      - name: Test
+        shell: pwsh
+        run: |
+          $pkg = Get-Content package.json -Raw | ConvertFrom-Json
+          if ($pkg.scripts.test) {
+            npm test
+          } else {
+            Write-Host "No npm test script — skipping."
+          }
