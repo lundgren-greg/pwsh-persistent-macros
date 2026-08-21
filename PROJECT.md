@@ -23,17 +23,15 @@ Nine numbered PowerShell command slots (`sm` / `rm` / `wm`) that persist across 
 
 ## Stopped at
 
-1. Created from `lundgren-greg/repo-template`, PowerShell stack.
-2. `Register-PersistentMacros.ps1` at repo root; tests in `tests/`.
-3. Next after this session: keep CI green; `$PROFILE` on this machine loads the file.
+1. Public repo live. `$PROFILE` on this machine dots `Register-PersistentMacros.ps1`.
+2. GitHub profile README points at this repo instead of inlining the script.
 
 ---
 
 ## Next steps (ordered)
 
-1. Confirm `Invoke-Pester ./tests` and GitHub Actions CI.
-2. Point this machine’s `$PROFILE` at `Register-PersistentMacros.ps1`.
-3. Point the GitHub profile README at this repo instead of inlining the script.
+1. Confirm GitHub Actions CI is green on `main`.
+2. No further slice planned.
 
 ---
 
