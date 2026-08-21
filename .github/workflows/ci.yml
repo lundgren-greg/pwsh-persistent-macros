@@ -10,41 +10,20 @@ permissions:
   contents: read
 
 jobs:
-  repo-kit:
-    name: Repo kit
+  lint-and-validate:
+    name: Lint & Validate
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
 
-      - name: Required files exist
+      - name: Validate PowerShell script syntax
         shell: pwsh
         run: |
-          $required = @(
-            "README.md",
-            "LICENSE",
-            "SECURITY.md",
-            "CODEOWNERS",
-            "PROJECT.md",
-            "AGENTS.md",
-            ".editorconfig",
-            ".gitignore",
-            ".github/workflows/ci.yml",
-            ".github/copilot-instructions.md"
-          )
-          $missing = $required | Where-Object { -not (Test-Path $_) }
-          if ($missing) {
-            Write-Error "Missing required repo-kit files:`n$($missing -join "`n")"
-            exit 1
-          }
-          Write-Host "Repo kit files present."
-
-      - name: Parse PowerShell scripts
-        shell: pwsh
-        run: |
-          $files = Get-ChildItem -Path scripts, .github -Recurse -Filter *.ps1 -ErrorAction SilentlyContinue
+          $files = Get-ChildItem -Path . -Recurse -Filter *.ps1 |
+            Where-Object { $_.FullName -notmatch '\\(\.git|templates)\\' }
           if (-not $files) {
-            Write-Host "No PowerShell scripts to parse."
-            exit 0
+            Write-Error "No PowerShell scripts found."
+            exit 1
           }
           $errors = @()
           foreach ($file in $files) {
@@ -56,7 +35,7 @@ jobs:
               [ref]$parseErrors
             ) | Out-Null
             if ($parseErrors.Count -gt 0) {
-              $errors += "$($file.FullName): $($parseErrors.Count) parse error(s)"
+              $errors += "$($file.Name): $($parseErrors.Count) parse error(s)"
               $parseErrors | ForEach-Object { Write-Host "  $_" }
             } else {
               Write-Host "OK: $($file.FullName)"
@@ -67,21 +46,33 @@ jobs:
             exit 1
           }
 
-      - name: PSScriptAnalyzer (Error severity)
+      - name: Run PSScriptAnalyzer
         shell: pwsh
         run: |
-          $files = Get-ChildItem -Path scripts -Filter *.ps1 -ErrorAction SilentlyContinue
-          if (-not $files) {
-            Write-Host "No scripts/ files to analyze."
-            exit 0
-          }
           Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+          $files = Get-ChildItem -Path . -Recurse -Filter *.ps1 |
+            Where-Object { $_.FullName -notmatch '\\(\.git|templates)\\' }
           $results = $files | ForEach-Object {
             Invoke-ScriptAnalyzer -Path $_.FullName -Severity Error
           }
           if ($results) {
             $results | Format-Table -AutoSize
-            Write-Error "$($results.Count) PSScriptAnalyzer error(s)"
+            Write-Error "$($results.Count) issue(s) found by PSScriptAnalyzer"
             exit 1
           }
-          Write-Host "PSScriptAnalyzer: no errors."
+          Write-Host "PSScriptAnalyzer: no issues found"
+
+      - name: Pester (if tests exist)
+        shell: pwsh
+        run: |
+          $pesterFiles = Get-ChildItem -Path tests -Recurse -Filter *.Tests.ps1 -ErrorAction SilentlyContinue
+          if (-not $pesterFiles) {
+            Write-Host "No Pester tests found — skipping."
+            exit 0
+          }
+          Install-Module -Name Pester -Force -Scope CurrentUser -SkipPublisherCheck -MinimumVersion 5.0.0
+          $config = New-PesterConfiguration
+          $config.Run.Path = "./tests"
+          $config.Run.Exit = $true
+          $config.Output.Verbosity = "Detailed"
+          Invoke-Pester -Configuration $config

@@ -1,93 +1,84 @@
-# __PROJECT_NAME__
+# pwsh-persistent-macros
 
-[![CI](https://github.com/__GITHUB_OWNER__/__PROJECT_NAME__/actions/workflows/ci.yml/badge.svg)](https://github.com/__GITHUB_OWNER__/__PROJECT_NAME__/actions/workflows/ci.yml)
+[![CI](https://github.com/lundgren-greg/pwsh-persistent-macros/actions/workflows/ci.yml/badge.svg)](https://github.com/lundgren-greg/pwsh-persistent-macros/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-<!-- TEMPLATE-INTRO:START -->
-> **This is a GitHub template** (`lundgren-greg/repo-template`).
-> Create a new repo from it, then run:
->
-> ```powershell
-> .\scripts\Initialize-Repo.ps1 -Name my-project -Description "One-line pitch" -Stack DotNet
-> ```
->
-> That replaces placeholders, installs the matching CI workflow, and rewrites this intro
-> into a project README. Stack options: `DotNet`, `PowerShell`, `Python`, `Node`, `Rust`, `Generic`.
->
-> Kit source: the files we keep repeating — README, PROJECT.md, LICENSE, SECURITY, CODEOWNERS,
-> CI, EditorConfig, Copilot/agent instructions — as used in pathfix-cli, diagnostic-recording,
-> and CopilotDocConverter.
-<!-- TEMPLATE-INTRO:END -->
+Nine sticky PowerShell command slots that survive closing the terminal. After you run a command worth keeping, `sm3` saves it. `rm3` replays it in any later session. `wm3` shows what’s in the slot without running it.
 
-__PROJECT_DESCRIPTION__
+This is for commands that are too specific to become a permanent alias, but too annoying to retype. `Ctrl+R` history is chronological and full of near-misses. These are nine sticky slots you choose.
 
-## Why this project
+## Load from `$PROFILE`
 
-<!-- One short paragraph: the problem and why a local tool (not a web service) is the right shape. -->
+PowerShell 7. Clone this repo, then dot-source the script (same pattern as other profile helpers):
 
-## Key features
-
-- Feature one
-- Feature two
-- Feature three
-
-## Architecture
-
-```text
-__PROJECT_NAME__/
-  src/          # Application / library code
-  tests/        # Automated tests
-  scripts/      # PowerShell helpers (setup, build, launch)
-  docs/         # Design notes and longer-form docs
-  samples/      # Synthetic samples only — never real confidential data
+```powershell
+$persistentMacros = Join-Path $env:REPOS 'pwsh-persistent-macros\Register-PersistentMacros.ps1'
+if (-not (Test-Path $persistentMacros)) {
+    $persistentMacros = Join-Path $HOME 'repos\pwsh-persistent-macros\Register-PersistentMacros.ps1'
+}
+if (Test-Path $persistentMacros) {
+    . $persistentMacros
+}
 ```
 
-Keep business logic in a core library. Keep UI / CLI shells thin.
+Optional: set `$PersistentMacrosFile` to a JSON path **before** the dot-source. Default is `~/profile/macros.json`.
+
+```powershell
+$PersistentMacrosFile = Join-Path $HOME 'OneDrive\profile\macros.json'
+```
+
+Do not pipe this file through `iex`. It runs in every shell; copy or clone it, then dot-source.
+
+## Why it helps
+
+A test filter you just got right. You don’t want that as a forever alias, and you don’t want to hunt it in history tomorrow.
+
+```powershell
+dotnet test .\tests\Foo.Tests --filter "FullyQualifiedName~Portage" -v n
+sm1          # save the last command into slot 1
+# close the terminal, come back next day
+wm1          # peek first if you’re not sure what’s in the slot
+rm1          # replay it
+```
+
+A one-liner for the repo you’re in this week.
+
+```powershell
+gh pr checks --watch
+sm2
+rm2          # later, same watch, no retyping
+```
+
+A long remote or container command.
+
+```powershell
+ssh user@build-box 'cd /srv/app && docker compose logs -f --tail 100 api'
+sm3
+```
+
+Overwrite a slot by running a new command and `smN` again.
+
+| | Save last command | Replay | Peek |
+| --- | --- | --- | --- |
+| Slot 1 | `sm1` | `rm1` | `wm1` |
+| Slot 2 | `sm2` | `rm2` | `wm2` |
+| … | … | … | … |
+| Slot 9 | `sm9` | `rm9` | `wm9` |
 
 ## Requirements
 
-- Windows 10/11 (primary)
 - PowerShell 7+ (`pwsh`)
-- <!-- stack tools, e.g. .NET 9 SDK / Node 20 / Python 3.12 / Rust stable -->
+- Windows is the primary target; the script is ordinary PowerShell
 
-## Build and test
-
-```powershell
-# After you pick a stack, replace these with the real commands.
-# DotNet:    dotnet restore; dotnet build -c Release; dotnet test -c Release
-# PowerShell: Invoke-Pester ./tests
-# Python:    python -m pip install -e ".[dev]"; pytest
-# Node:      npm ci; npm test
-# Rust:      cargo test --workspace
-```
-
-## Usage
+## Test
 
 ```powershell
-# Show the first useful command here.
+Invoke-Pester ./tests
 ```
 
-## Security and privacy
+## Security
 
-- Prefer **offline / local-first**. No telemetry and no upload helpers unless a feature is
-  explicitly opt-in and documented in [SECURITY.md](SECURITY.md).
-- Do not commit secrets, tokens, or real customer / production data.
-- Put confidential local fixtures in `samples/private/` (gitignored).
-
-## Contribution and development notes
-
-- Read [PROJECT.md](PROJECT.md) first for current status and the session resume checklist.
-- Keep [PROJECT.md](PROJECT.md) current when you stop work.
-- Add or update tests for behavior changes.
-- Keep CI (`.github/workflows/ci.yml`) green.
-- No force-push or history rewrite on `main` without asking.
-
-## Roadmap (high level)
-
-| Item | Status |
-|------|--------|
-| Standard repo kit | Done (this template) |
-| First working slice | Not started |
+`rmN` runs the saved text with `Invoke-Expression`. Treat `macros.json` as executable config: only save commands you ran yourself, and do not import someone else’s file. Details in [SECURITY.md](SECURITY.md).
 
 ## License
 

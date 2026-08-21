@@ -1,8 +1,8 @@
 {
-  "title": "__PROJECT_NAME__",
-  "repo": "C:\\Repos\\__PROJECT_NAME__",
+  "title": "pwsh-persistent-macros",
+  "repo": "C:\\Repos\\pwsh-persistent-macros",
   "status": "active",
   "session_ids": [],
-  "created": "__TODAY__",
-  "updated": "__TODAY__"
+  "created": "2026-08-20",
+  "updated": "2026-08-20"
 }

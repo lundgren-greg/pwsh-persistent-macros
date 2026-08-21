@@ -1,4 +1,4 @@
-# Copilot instructions — __PROJECT_NAME__
+# Copilot instructions — pwsh-persistent-macros
 
 Windows-first local project. Read `PROJECT.md` first for current status, blockers,
 and the session resume checklist; keep it updated when you stop work.

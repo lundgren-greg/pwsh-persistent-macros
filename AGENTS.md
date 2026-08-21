@@ -1,4 +1,4 @@
-# Agent instructions — __PROJECT_NAME__
+# Agent instructions — pwsh-persistent-macros
 
 Read `PROJECT.md` first for current status, blockers, and the session resume checklist.
 Keep it updated when you stop work.
@@ -16,14 +16,12 @@ Starter skills are in `.agents/skills/` (commit, PR, review, debug, TDD, plan, s
 ## Layout
 
 ```text
-src/          # Application / library code — business logic lives here
-tests/        # Automated tests
-scripts/      # PowerShell helpers (Verb-Noun, [CmdletBinding()])
-docs/         # Design notes
-samples/      # Synthetic samples only
+Register-PersistentMacros.ps1   # Drop-in file dotted from $PROFILE
+tests/                          # Pester 5
+scripts/                        # Repo kit helpers
 ```
 
-Keep UI / CLI shells thin. New behavior goes in core code with tests, then gets thin wiring.
+This is a single profile helper, not an app. Keep the loadable script at the repo root so the `$PROFILE` path stays short.
 
 ## Conventions
 

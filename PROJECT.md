@@ -1,41 +1,39 @@
-# __PROJECT_NAME__ — project tracker
+# pwsh-persistent-macros — project tracker
 
 > **Resume here** when starting a new session. Keep this file current when you stop work.
-> Optional Grok-Context thread: `C:\Repos\Grok-Context\threads\__PROJECT_NAME__\`
+> Optional Grok-Context thread: `C:\Repos\Grok-Context\threads\pwsh-persistent-macros\`
 
 | Field | Value |
 |-------|--------|
-| **Local path** | `C:\Repos\__PROJECT_NAME__` |
-| **GitHub** | `__GITHUB_OWNER__/__PROJECT_NAME__` |
+| **Local path** | `C:\Repos\pwsh-persistent-macros` |
+| **GitHub** | `lundgren-greg/pwsh-persistent-macros` |
 | **Branch** | `main` |
 | **Last commit** | Run `git log -1 --oneline` |
-| **Remote** | `origin` → https://github.com/__GITHUB_OWNER__/__PROJECT_NAME__.git |
-| **Status** | Scaffold from `repo-template` — not started |
-| **Updated** | __TODAY__ |
+| **Remote** | `origin` → https://github.com/lundgren-greg/pwsh-persistent-macros.git |
+| **Status** | First slice: drop-in `Register-PersistentMacros.ps1` + Pester smoke tests |
+| **Updated** | 2026-08-20 |
 
 ---
 
 ## Goal
 
-<!-- One paragraph: what this ships, for whom, and the hard constraint (offline, Windows-only, etc.). -->
-
-__PROJECT_DESCRIPTION__
+Nine numbered PowerShell command slots (`sm` / `rm` / `wm`) that persist across sessions. Dot-sourced from `$PROFILE`. Local JSON only — no network.
 
 ---
 
 ## Stopped at
 
-1. Created from `lundgren-greg/repo-template`.
-2. Ran `Initialize-Repo.ps1` (or still need to).
-3. Next: fill **Why this project**, implement the first slice, and keep CI green.
+1. Created from `lundgren-greg/repo-template`, PowerShell stack.
+2. `Register-PersistentMacros.ps1` at repo root; tests in `tests/`.
+3. Next after this session: keep CI green; `$PROFILE` on this machine loads the file.
 
 ---
 
 ## Next steps (ordered)
 
-1. Replace any leftover template tokens if a scan still finds them.
-2. Write the first working slice + tests.
-3. Update README architecture / usage with real commands.
+1. Confirm `Invoke-Pester ./tests` and GitHub Actions CI.
+2. Point this machine’s `$PROFILE` at `Register-PersistentMacros.ps1`.
+3. Point the GitHub profile README at this repo instead of inlining the script.
 
 ---
 
@@ -60,25 +58,18 @@ __PROJECT_DESCRIPTION__
 ### Layout
 
 ```
-__PROJECT_NAME__/
-  PROJECT.md
-  README.md, LICENSE, SECURITY.md, CODEOWNERS, AGENTS.md
-  .editorconfig, .gitattributes, .gitignore
+pwsh-persistent-macros/
+  Register-PersistentMacros.ps1
+  tests/Register-PersistentMacros.Tests.ps1
+  README.md, LICENSE, SECURITY.md, PROJECT.md
   .github/workflows/ci.yml
-  .github/copilot-instructions.md
-  src/
-  tests/
-  scripts/
-  docs/
-  samples/
 ```
 
 ### Commands
 
 ```powershell
-cd C:\Repos\__PROJECT_NAME__
-git status
-git log -1 --oneline
+cd C:\Repos\pwsh-persistent-macros
+Invoke-Pester ./tests
 ```
 
 ---
@@ -87,9 +78,8 @@ git log -1 --oneline
 
 | Item | Notes |
 |------|--------|
-| First working slice | |
-| Tests for the slice | |
-| README usage that matches reality | |
+| Named slots / list helper | Out of scope unless it gets painful |
+| PowerShell module / PSGallery | Not needed for a profile drop-in |
 
 ---
 
@@ -97,9 +87,11 @@ git log -1 --oneline
 
 | Date | Decision |
 |------|----------|
-| __TODAY__ | Standard repo kit from `lundgren-greg/repo-template` (README, PROJECT.md, LICENSE, SECURITY, CODEOWNERS, CI, EditorConfig). |
-| __TODAY__ | License MIT; CODEOWNERS `* @lundgren-greg`. |
-| __TODAY__ | Default branch `main`. No force-push after the remote exists without asking. |
+| 2026-08-20 | Standard repo kit from `lundgren-greg/repo-template`. |
+| 2026-08-20 | License MIT; CODEOWNERS `* @lundgren-greg`. |
+| 2026-08-20 | Default branch `main`. |
+| 2026-08-20 | Single `.ps1` dotted from `$PROFILE`, not a module. `$PersistentMacrosFile` is the path override. |
+| 2026-08-20 | `rmN` uses `Invoke-Expression` of commands the user saved. Documented in SECURITY.md. |
 
 ---
 
@@ -108,7 +100,7 @@ git log -1 --oneline
 When starting a new agent/chat session:
 
 1. Read **this file** (`PROJECT.md`).
-2. `git -C C:\Repos\__PROJECT_NAME__ status` and `git log -1 --oneline`.
+2. `git -C C:\Repos\pwsh-persistent-macros status` and `git log -1 --oneline`.
 3. `gh auth status`.
 4. Update **Stopped at** / **Next steps** / **Open questions** before ending the session.
 5. If a Grok-Context thread exists, refresh `brief.md` and point `NOW.md` at it.
@@ -117,6 +109,7 @@ When starting a new agent/chat session:
 
 ## Do not
 
-- Commit secrets, tokens, or real customer / production dumps (use `samples/private/` locally; gitignored).
+- Commit secrets, tokens, or a live `macros.json`.
 - Add network upload / telemetry helpers without an explicit opt-in design and a SECURITY.md update.
 - Force-push or rewrite history on `main` after the remote exists without asking.
+- Put `Set-StrictMode` or `$ErrorActionPreference` in `Register-PersistentMacros.ps1` (it is dotted into the user’s session).
