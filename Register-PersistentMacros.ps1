@@ -4,7 +4,7 @@
 
 .DESCRIPTION
     Dot-source from your PowerShell 7 $PROFILE. After you run a command worth
-    keeping, smN saves it, rmN replays it, wmN peeks. Slots are 1-9.
+    keeping, smN saves it, rmN replays it, wmN peeks. Slots are 0-9.
 
     Bindings persist in JSON. Default path is ~/profile/macros.json. Set
     $PersistentMacrosFile to a different path before dot-sourcing if you want.
@@ -53,7 +53,7 @@ function global:Save-MacrosToDisk {
     $toSave | ConvertTo-Json | Set-Content -LiteralPath $path
 }
 
-1..9 | ForEach-Object {
+0..9 | ForEach-Object {
     $n = "$_"
     Set-Item -Path "function:global:sm$n" -Value {
         param(
@@ -75,6 +75,7 @@ function global:Save-MacrosToDisk {
             $global:PersistentMacros[$n] = $last.CommandLine
         }
         Save-MacrosToDisk
+        Write-Host "Macro $n saved." -ForegroundColor Green
     }.GetNewClosure()
 
     Set-Item -Path "function:global:rm$n" -Value {

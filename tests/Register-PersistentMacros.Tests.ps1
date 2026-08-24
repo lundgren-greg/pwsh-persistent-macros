@@ -9,8 +9,8 @@ Describe 'Register-PersistentMacros' {
         . $script:scriptPath
     }
 
-    It 'registers sm, rm, and wm for slots 1-9' {
-        1..9 | ForEach-Object {
+    It 'registers sm, rm, and wm for slots 0-9' {
+        0..9 | ForEach-Object {
             Get-Command -Name "sm$_" -CommandType Function -ErrorAction Stop | Should -Not -BeNullOrEmpty
             Get-Command -Name "rm$_" -CommandType Function -ErrorAction Stop | Should -Not -BeNullOrEmpty
             Get-Command -Name "wm$_" -CommandType Function -ErrorAction Stop | Should -Not -BeNullOrEmpty
