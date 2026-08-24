@@ -38,6 +38,18 @@ Describe 'Register-PersistentMacros' {
         Get-Content -LiteralPath $script:macroFile -Raw | Should -Match 'macro-probe'
     }
 
+    It 'saves a macro via -Cmd without requiring history' {
+        sm3 -Cmd 'Get-Date -Format "yyyy-MM-dd"'
+        wm3 | Should -Be 'Get-Date -Format "yyyy-MM-dd"'
+        Get-Content -LiteralPath $script:macroFile -Raw | Should -Match 'Get-Date'
+    }
+
+    It 'warns and does not save when -Cmd is empty' {
+        $warning = sm2 -Cmd '' 3>&1
+        $warning | Should -Match 'empty'
+        wm2 | Should -Be 'No macro 2'
+    }
+
     It 'replays a saved slot' {
         Add-History -InputObject ([pscustomobject]@{
                 CommandLine        = '$global:PersistentMacroProbe = 42'
