@@ -56,6 +56,15 @@ ssh user@build-box 'cd /srv/app && docker compose logs -f --tail 100 api'
 sm3
 ```
 
+Need to save a command string without running it first (or without relying on history)?
+
+```powershell
+sm3 -Cmd 'Get-Date -Format "yyyy-MM-dd"'
+wm3          # shows the saved text
+```
+
+If `-Cmd` is empty (for example `sm3 -Cmd ''`), the function warns and does not save.
+
 Overwrite a slot by running a new command and `smN` again.
 
 | | Save last command | Replay | Peek |
