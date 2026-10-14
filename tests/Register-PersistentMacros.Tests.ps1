@@ -47,6 +47,17 @@ Describe 'Register-PersistentMacros' {
         Get-Content -LiteralPath $script:macroFile -Raw | Should -Match 'Get-Date'
     }
 
+    It 'keeps edge slots 0 and 90 independent' {
+        sm0 -Cmd 'Write-Output slot-zero'
+        sm90 -Cmd 'Write-Output slot-ninety'
+        wm0 | Should -Be 'Write-Output slot-zero'
+        wm90 | Should -Be 'Write-Output slot-ninety'
+        rm90 | Should -Be 'slot-ninety'
+        $saved = Get-Content -LiteralPath $script:macroFile -Raw | ConvertFrom-Json -AsHashtable
+        $saved['0'] | Should -Be 'Write-Output slot-zero'
+        $saved['90'] | Should -Be 'Write-Output slot-ninety'
+    }
+
     It 'warns and does not save when -Cmd is empty' {
         $warning = sm2 -Cmd '' 3>&1
         $warning | Should -Match 'empty'
