@@ -11,20 +11,21 @@
 | **Last commit** | Run `git log -1 --oneline` |
 | **Remote** | `origin` → https://github.com/lundgren-greg/pwsh-persistent-macros.git |
 | **Status** | First slice: drop-in `Register-PersistentMacros.ps1` + Pester smoke tests |
-| **Updated** | 2026-08-20 |
+| **Updated** | 2026-10-11 |
 
 ---
 
 ## Goal
 
-Nine numbered PowerShell command slots (`sm` / `rm` / `wm`) that persist across sessions. Dot-sourced from `$PROFILE`. Local JSON only — no network.
+Numbered PowerShell command slots 0–90 (`sm` / `rm` / `wm`) that persist across sessions. Dot-sourced from `$PROFILE`. Local JSON only — no network.
 
 ---
 
 ## Stopped at
 
-1. Public repo live. `$PROFILE` on this machine dots `Register-PersistentMacros.ps1`.
+1. Public repo live. The VS Code host dots `Register-PersistentMacros.ps1`. The console profile inlines its own copy (also `sm` / `rm` / `wm` / `dm` / `em`).
 2. GitHub profile README points at this repo instead of inlining the script.
+3. Slots are 0–90 in the repo script and in both profile copies (`$PROFILE` and `C:\Repos\Scripts\Microsoft.PowerShell_profile.ps1`). A shell that was already open still has the old 0–30 functions until it reloads the profile.
 
 ---
 
@@ -90,6 +91,7 @@ Invoke-Pester ./tests
 | 2026-08-20 | Default branch `main`. |
 | 2026-08-20 | Single `.ps1` dotted from `$PROFILE`, not a module. `$PersistentMacrosFile` is the path override. |
 | 2026-08-20 | `rmN` uses `Invoke-Expression` of commands the user saved. Documented in SECURITY.md. |
+| 2026-10-11 | Slots are 0–90. The console profile inlines the same range; the VS Code host still dots this script. |
 
 ---
 
