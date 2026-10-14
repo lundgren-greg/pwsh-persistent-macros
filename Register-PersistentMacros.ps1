@@ -1,10 +1,10 @@
 <#
 .SYNOPSIS
-    Nine sticky PowerShell command slots that survive new sessions.
+    Sticky PowerShell command slots 0 through 90 that survive new sessions.
 
 .DESCRIPTION
     Dot-source from your PowerShell 7 $PROFILE. After you run a command worth
-    keeping, smN saves it, rmN replays it, wmN peeks. Slots are 1-9.
+    keeping, smN saves it, rmN replays it, wmN peeks. Slots are 0-90.
 
     Bindings persist in JSON. Default path is ~/profile/macros.json. Set
     $PersistentMacrosFile to a different path before dot-sourcing if you want.
@@ -53,7 +53,7 @@ function global:Save-MacrosToDisk {
     $toSave | ConvertTo-Json | Set-Content -LiteralPath $path
 }
 
-1..9 | ForEach-Object {
+0..90 | ForEach-Object {
     $n = "$_"
     Set-Item -Path "function:global:sm$n" -Value {
         param(

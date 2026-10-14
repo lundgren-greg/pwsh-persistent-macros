@@ -9,16 +9,19 @@ Describe 'Register-PersistentMacros' {
         . $script:scriptPath
     }
 
-    It 'registers sm, rm, and wm for slots 1-9' {
-        1..9 | ForEach-Object {
-            Get-Command -Name "sm$_" -CommandType Function -ErrorAction Stop | Should -Not -BeNullOrEmpty
-            Get-Command -Name "rm$_" -CommandType Function -ErrorAction Stop | Should -Not -BeNullOrEmpty
-            Get-Command -Name "wm$_" -CommandType Function -ErrorAction Stop | Should -Not -BeNullOrEmpty
+    It 'registers sm, rm, and wm for slots 0-90' {
+        foreach ($n in 0, 1, 9, 33, 90) {
+            Get-Command -Name "sm$n" -CommandType Function -ErrorAction Stop | Should -Not -BeNullOrEmpty
+            Get-Command -Name "rm$n" -CommandType Function -ErrorAction Stop | Should -Not -BeNullOrEmpty
+            Get-Command -Name "wm$n" -CommandType Function -ErrorAction Stop | Should -Not -BeNullOrEmpty
         }
+        { Get-Command -Name 'wm91' -CommandType Function -ErrorAction Stop } | Should -Throw
     }
 
     It 'peeks an empty slot without throwing' {
         wm8 | Should -Be 'No macro 8'
+        wm33 | Should -Be 'No macro 33'
+        wm90 | Should -Be 'No macro 90'
     }
 
     It 'reports an empty slot when replaying' {

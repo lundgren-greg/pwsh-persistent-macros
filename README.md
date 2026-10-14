@@ -3,9 +3,9 @@
 [![CI](https://github.com/lundgren-greg/pwsh-persistent-macros/actions/workflows/ci.yml/badge.svg)](https://github.com/lundgren-greg/pwsh-persistent-macros/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Nine sticky PowerShell command slots that survive closing the terminal. After you run a command worth keeping, `sm3` saves it. `rm3` replays it in any later session. `wm3` shows what’s in the slot without running it.
+Sticky PowerShell command slots 0 through 90 that survive closing the terminal. After you run a command worth keeping, `sm3` saves it. `rm3` replays it in any later session. `wm3` shows what’s in the slot without running it.
 
-This is for commands that are too specific to become a permanent alias, but too annoying to retype. `Ctrl+R` history is chronological and full of near-misses. These are nine sticky slots you choose.
+This is for commands that are too specific to become a permanent alias, but too annoying to retype. `Ctrl+R` history is chronological and full of near-misses. These are slots you choose, `sm0` through `sm90`.
 
 ## Load from `$PROFILE`
 
@@ -69,10 +69,11 @@ Overwrite a slot by running a new command and `smN` again.
 
 | | Save last command | Replay | Peek |
 | --- | --- | --- | --- |
+| Slot 0 | `sm0` | `rm0` | `wm0` |
 | Slot 1 | `sm1` | `rm1` | `wm1` |
 | Slot 2 | `sm2` | `rm2` | `wm2` |
 | … | … | … | … |
-| Slot 9 | `sm9` | `rm9` | `wm9` |
+| Slot 90 | `sm90` | `rm90` | `wm90` |
 
 ## Requirements
 
